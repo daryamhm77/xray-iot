@@ -1,0 +1,69 @@
+services:
+  xray-service:
+    build:
+      context: .
+      dockerfile: ./apps/xray-service/Dockerfile
+      target: development
+    command: npm run start:dev xray-service
+    environment:
+      - RABBIT_MQ_URI=amqp://admin:admin@rabbitmq:5672
+      - MONGODB_URI=mongodb://root:password123@mongodb:27017/xray?authSource=admin
+      - PORT=3009
+    depends_on:
+      - rabbitmq
+      - mongodb
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - '3009:3009'
+
+  producer-service:
+    build:
+      context: .
+      dockerfile: ./apps/producer-service/Dockerfile
+    environment:
+      - RABBIT_MQ_URI=amqp://admin:admin@rabbitmq:5672
+      - PRODUCER_PORT=3001
+    depends_on:
+      - rabbitmq
+    ports:
+      - '3001:3001'
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq2
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  mongodb:
+    image: docker.io/bitnami/mongodb:6.0
+    container_name: mongodb
+    environment:
+      - MONGODB_ROOT_USER=root
+      - MONGODB_ROOT_PASSWORD=password123
+      - MONGODB_DATABASE=xray
+    volumes:
+      - mongodb_data:/bitnami/mongodb
+    ports:
+      - '27018:27017'
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', 'db.runCommand({ ping: 1 })', '--host', 'localhost:27017']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongodb_data:
+  rabbitmq_data:
