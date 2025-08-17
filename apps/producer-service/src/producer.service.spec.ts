@@ -7,7 +7,6 @@ describe('ProducerService', () => {
   let service: ProducerService;
   let rmqService: jest.Mocked<RmqService>;
 
-  // Test data factories
   const createTestDeviceId = (suffix = '001') => `device-${suffix}`;
 
   const mockRmqService = {
@@ -28,10 +27,8 @@ describe('ProducerService', () => {
     service = module.get<ProducerService>(ProducerService);
     rmqService = module.get(RmqService);
 
-    // Clear all mocks before each test
     jest.clearAllMocks();
 
-    // Mock Logger to prevent console output during tests
     jest.spyOn(Logger.prototype, 'log').mockImplementation();
   });
 
@@ -40,7 +37,6 @@ describe('ProducerService', () => {
   });
 
   describe('generateSample', () => {
-    // Helper to validate payload structure
     const validatePayloadStructure = (
       payload: XrayPayload,
       deviceId: string,
@@ -52,7 +48,6 @@ describe('ProducerService', () => {
       );
     };
 
-    // Helper to validate random ranges
     const validateRandomRanges = (payload: XrayPayload) => {
       expect(payload.dataLength).toBeGreaterThanOrEqual(1024);
       expect(payload.dataLength).toBeLessThanOrEqual(5120);
@@ -91,7 +86,6 @@ describe('ProducerService', () => {
       expect(payload.mA).toBe(overrides.mA);
       expect(payload.projectionType).toBe(overrides.projectionType);
       expect(payload.dataLength).toBe(overrides.dataLength);
-      // Other fields should still be generated
       expect(payload.dataVolume).toBeGreaterThanOrEqual(2048);
       expect(payload.exposureTime).toBeGreaterThanOrEqual(50);
     });
@@ -101,7 +95,6 @@ describe('ProducerService', () => {
       const payload1 = service.generateSample(deviceId);
       const payload2 = service.generateSample(deviceId);
 
-      // Check that at least some random fields differ
       const randomFields = [
         'dataLength',
         'dataVolume',
@@ -170,7 +163,6 @@ describe('ProducerService', () => {
 
   describe('sendBatch', () => {
     beforeEach(() => {
-      // Mock setTimeout to make tests run faster
       jest.useFakeTimers();
     });
 
@@ -179,15 +171,12 @@ describe('ProducerService', () => {
     });
 
     it.skip('should send default batch of 5 samples', async () => {
-      // Skip this test for now due to timeout issues
     });
 
     it.skip('should send specified number of samples', async () => {
-      // Skip this test for now due to timeout issues
     });
 
     it.skip('should log batch completion', async () => {
-      // Skip this test for now due to timeout issues
     });
 
     it('should handle zero count gracefully', async () => {
@@ -211,10 +200,8 @@ describe('ProducerService', () => {
         mA: 250,
       };
 
-      // Generate a sample manually
       const generatedPayload = service.generateSample(deviceId, overrides);
 
-      // Mock generateSample to return the same payload
       const generateSampleSpy = jest
         .spyOn(service, 'generateSample')
         .mockReturnValue(generatedPayload);

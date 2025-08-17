@@ -11,7 +11,6 @@ describe('SignalController', () => {
   let controller: SignalController;
   let service: jest.Mocked<SignalService>;
 
-  // Common test data
   const mockXrayData = {
     _id: new Types.ObjectId('507f1f77bcf86cd799439011'),
     deviceId: 'device-001',
@@ -42,7 +41,6 @@ describe('SignalController', () => {
     findWithFilters: jest.fn(),
   };
 
-  // Helper functions
   const createHttpException = (message: string, status: HttpStatus) =>
     new HttpException(message, status);
 
@@ -87,7 +85,6 @@ describe('SignalController', () => {
     controller = module.get<SignalController>(SignalController);
     service = module.get(SignalService);
 
-    // Clear all mocks before each test
     jest.clearAllMocks();
   });
 

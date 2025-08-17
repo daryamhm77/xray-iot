@@ -9,7 +9,6 @@ import { UpdateXrayDto } from './dto/update-xray.dto';
 describe('SignalService', () => {
   let service: SignalService;
 
-  // Test data factory
   const createMockXrayData = (overrides = {}) => ({
     _id: '507f1f77bcf86cd799439011',
     deviceId: 'device-001',
@@ -25,7 +24,6 @@ describe('SignalService', () => {
 
   const mockXrayData = createMockXrayData();
 
-  // DTO factory
   const createXrayDto = (overrides = {}): CreateXrayDto => ({
     deviceId: 'device-001',
     time: '2024-01-01T10:00:00.000Z',
@@ -52,7 +50,7 @@ describe('SignalService', () => {
     }
   );
 
-  // Helper to create mock document
+
   const createMockDocument = (
     data = mockXrayData,
     saveResult = mockXrayData,
@@ -61,16 +59,16 @@ describe('SignalService', () => {
     save: jest.fn().mockResolvedValue(saveResult),
   });
 
-  // Helper to mock query with exec
+
   const mockQueryWithExec = (result: any) => ({
     exec: jest.fn().mockResolvedValue(result),
   });
 
   beforeEach(async () => {
-    // Reset mocks
+  
     jest.clearAllMocks();
 
-    // Reset mocks
+
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -84,7 +82,7 @@ describe('SignalService', () => {
 
     service = module.get<SignalService>(SignalService);
 
-    // Mock Logger to prevent console output during tests
+
     jest.spyOn(Logger.prototype, 'log').mockImplementation();
     jest.spyOn(Logger.prototype, 'error').mockImplementation();
   });

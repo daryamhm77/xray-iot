@@ -19,7 +19,6 @@ export class SignalService {
     private readonly xrayModel: Model<XrayData>,
   ) {}
 
-  // DRY: Reusable ID validation and conversion
   private validateAndConvertId(id: string): Types.ObjectId {
     if (!Types.ObjectId.isValid(id)) {
       throw new Error(`Invalid ObjectId format: ${id}`);
@@ -27,7 +26,6 @@ export class SignalService {
     return new Types.ObjectId(id);
   }
 
-  // DRY: Reusable success response formatter
   private createSuccessResponse<T>(
     message: string,
     data: T,
@@ -35,7 +33,6 @@ export class SignalService {
     return { message, data };
   }
 
-  // DRY: Reusable logging with consistent format
   private logSuccess(
     operation: string,
     id: string | Types.ObjectId,
@@ -46,7 +43,6 @@ export class SignalService {
     );
   }
 
-  // DRY: Reusable error logging
   private logError(operation: string, error: Error): void {
     this.logger.error(`Failed to ${operation}: ${error.message}`);
   }
@@ -101,7 +97,6 @@ export class SignalService {
     return savedSignal;
   }
 
-  // CRUD Operations
   async create(
     createXrayDto: CreateXrayDto,
   ): Promise<{ message: string; data: XrayData }> {
@@ -148,11 +143,9 @@ export class SignalService {
 
       const objectId = this.validateAndConvertId(id);
 
-      // Method 1: Try with ObjectId conversion (most reliable)
       let signal = await this.xrayModel.findById(objectId).exec();
 
       if (!signal) {
-        // Method 2: Fallback to string-based query
         this.logger.log(`findById failed, trying string-based query...`);
         signal = await this.xrayModel.findOne({ _id: id }).exec();
       }
@@ -180,13 +173,11 @@ export class SignalService {
 
       const objectId = this.validateAndConvertId(id);
 
-      // Method 1: Try with ObjectId conversion
       let updatedSignal = await this.xrayModel
         .findByIdAndUpdate(objectId, updateXrayDto, { new: true })
         .exec();
 
       if (!updatedSignal) {
-        // Method 2: Fallback to string-based query
         this.logger.log(
           `findByIdAndUpdate failed, trying string-based query...`,
         );
@@ -221,11 +212,9 @@ export class SignalService {
 
       const objectId = this.validateAndConvertId(id);
 
-      // Method 1: Try with ObjectId conversion
       let result = await this.xrayModel.findByIdAndDelete(objectId).exec();
 
       if (!result) {
-        // Method 2: Fallback to string-based query
         this.logger.log(
           `findByIdAndDelete failed, trying string-based query...`,
         );
@@ -249,7 +238,6 @@ export class SignalService {
     }
   }
 
-  // Advanced Filtering
   async findWithFilters(filters: {
     startDate?: Date;
     endDate?: Date;
