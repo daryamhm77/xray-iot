@@ -21,6 +21,9 @@ describe('SignalService', () => {
     mA: 200,
     exposureTime: 100,
     projectionType: 'AP',
+    latitude: 51.339764,
+    longitude: 12.339223833333334,
+    speed: 1.2038000000000002,
     ...overrides,
   });
 
@@ -35,6 +38,9 @@ describe('SignalService', () => {
     mA: 200,
     exposureTime: 100,
     projectionType: 'AP',
+    latitude: 51.339764,
+    longitude: 12.339223833333334,
+    speed: 1.2038000000000002,
     ...overrides,
   });
 
@@ -119,6 +125,31 @@ describe('SignalService', () => {
         mA: dto.mA,
         exposureTime: dto.exposureTime,
         projectionType: dto.projectionType,
+        latitude: dto.latitude,
+        longitude: dto.longitude,
+        speed: dto.speed,
+      }));
+      expect(mockDocument.save).toHaveBeenCalled();
+      expect(result).toBe(mockXrayData);
+    });
+
+    it('should process and save a signal with coordinate data', async () => {
+      const dto = createXrayDto({
+        latitude: 51.339764,
+        longitude: 12.339223833333334,
+        speed: 1.2038000000000002,
+      });
+      const mockDocument = createMockDocument();
+      mockModel.mockReturnValue(mockDocument);
+
+      const result = await service.processAndSaveSignal(dto);
+
+      // The service should use the provided coordinates
+      expect(mockModel).toHaveBeenCalledWith(expect.objectContaining({
+        deviceId: dto.deviceId,
+        latitude: 51.339764,
+        longitude: 12.339223833333334,
+        speed: 1.2038000000000002,
       }));
       expect(mockDocument.save).toHaveBeenCalled();
       expect(result).toBe(mockXrayData);
@@ -279,6 +310,22 @@ describe('SignalService', () => {
 
       expect(mockModel.find).toHaveBeenCalledWith({
         projectionType: 'AP',
+      });
+      expect(result).toBe(mockSignals);
+    });
+
+    it('should find signals with coordinate range filter', async () => {
+      const filters = {
+        latitude: { $gte: 51.0, $lte: 52.0 },
+        longitude: { $gte: 12.0, $lte: 13.0 },
+      };
+      mockModel.find.mockReturnValue(mockQueryWithExec(mockSignals) as any);
+
+      const result = await service.findWithFilters(filters);
+
+      expect(mockModel.find).toHaveBeenCalledWith({
+        latitude: { $gte: 51.0, $lte: 52.0 },
+        longitude: { $gte: 12.0, $lte: 13.0 },
       });
       expect(result).toBe(mockSignals);
     });

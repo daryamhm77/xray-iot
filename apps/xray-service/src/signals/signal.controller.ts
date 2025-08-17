@@ -14,13 +14,7 @@ import {
 import { SignalService } from './signal.service';
 import { CreateXrayDto } from './dto/create-xray.dto';
 import { UpdateXrayDto } from './dto/update-xray.dto';
-import {
-  ApiOperation,
-  ApiParam,
-  ApiBody,
-  ApiConsumes,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiParam, ApiBody, ApiConsumes, ApiQuery } from '@nestjs/swagger';
 import { FormType } from '@app/common/enums/form-type.enum';
 import { Pagination } from '@app/common/decorators/pagination.decorator';
 import { PaginationDto } from '@app/common/dto/pagination.dto';
@@ -57,6 +51,9 @@ export class SignalController {
           mA: 100,
           exposureTime: 100,
           projectionType: 'frontal',
+          latitude: 51.339764,
+          longitude: 12.339223833333334,
+          speed: 1.2038000000000002,
         },
       },
     },
@@ -100,11 +97,63 @@ export class SignalController {
   }
 
   @Get('filter')
+  @ApiQuery({
+    name: 'startDate',
+    type: String,
+    required: false,
+    description: 'Start date for filtering (ISO 8601 format)',
+    example: '2021-01-01T00:00:00.000Z',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    type: String,
+    required: false,
+    description: 'End date for filtering (ISO 8601 format)',
+    example: '2021-12-31T23:59:59.999Z',
+  })
+  @ApiQuery({
+    name: 'deviceId',
+    type: String,
+    required: false,
+    description: 'Device ID to filter by',
+    example: 'device-001',
+  })
+  @ApiQuery({
+    name: 'projectionType',
+    type: String,
+    required: false,
+    description: 'Projection type to filter by',
+    example: 'AP',
+  })
+  @ApiQuery({
+    name: 'latitude',
+    type: String,
+    required: false,
+    description: 'Latitude coordinate to filter by (decimal degrees)',
+    example: '51.339764',
+  })
+  @ApiQuery({
+    name: 'longitude',
+    type: String,
+    required: false,
+    description: 'Longitude coordinate to filter by (decimal degrees)',
+    example: '12.339223833333334',
+  })
+  @ApiQuery({
+    name: 'speed',
+    type: String,
+    required: false,
+    description: 'Speed value to filter by (m/s)',
+    example: '1.2038000000000002',
+  })
   async findWithFilters(
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
     @Query('deviceId') deviceId?: string,
     @Query('projectionType') projectionType?: string,
+    @Query('latitude') latitude?: string,
+    @Query('longitude') longitude?: string,
+    @Query('speed') speed?: string,
   ) {
     try {
       const filters = {
@@ -112,6 +161,9 @@ export class SignalController {
         endDate: endDate ? new Date(endDate) : undefined,
         deviceId,
         projectionType,
+        latitude: latitude ? parseFloat(latitude) : undefined,
+        longitude: longitude ? parseFloat(longitude) : undefined,
+        speed: speed ? parseFloat(speed) : undefined,
       };
       return await this.signalService.findWithFilters(filters);
     } catch (error) {
@@ -172,6 +224,9 @@ export class SignalController {
           mA: 180,
           exposureTime: 120,
           projectionType: 'PA',
+          latitude: 51.34,
+          longitude: 12.34,
+          speed: 2.5,
         },
       },
     },
