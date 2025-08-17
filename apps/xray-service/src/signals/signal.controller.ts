@@ -96,6 +96,17 @@ export class SignalController {
     }
   }
 
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    try {
+      return await this.signalService.findOne(id);
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Signal not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
   @Get('filter')
   @ApiQuery({
     name: 'startDate',
@@ -173,18 +184,6 @@ export class SignalController {
       );
     }
   }
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    try {
-      return await this.signalService.findOne(id);
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Signal not found',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-  }
-
   @Patch(':id')
   @ApiConsumes(FormType.Json, FormType.Urlencoded)
   @ApiParam({
