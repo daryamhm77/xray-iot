@@ -26,6 +26,16 @@ export class XrayData extends AbstractDocument {
 
   @Prop({ type: String })
   projectionType?: string; // e.g., AP, PA, Lateral
+
+  // Add coordinate and speed fields for IoT device tracking
+  @Prop({ required: false })
+  latitude?: number; // GPS latitude coordinate
+
+  @Prop({ required: false })
+  longitude?: number; // GPS longitude coordinate
+
+  @Prop({ required: false })
+  speed?: number; // Device movement speed
 }
 
 export const XrayDataSchema = SchemaFactory.createForClass(XrayData);

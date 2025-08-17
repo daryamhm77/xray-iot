@@ -10,6 +10,9 @@ export interface XrayPayload {
   mA?: number;
   exposureTime?: number;
   projectionType?: string;
+  latitude?: number;
+  longitude?: number;
+  speed?: number;
 }
 
 @Injectable()
@@ -31,6 +34,9 @@ export class ProducerService {
       mA: 100 + Math.floor(Math.random() * 300),
       exposureTime: 50 + Math.floor(Math.random() * 150),
       projectionType: Math.random() > 0.5 ? 'AP' : 'PA',
+      latitude: 51.339764 + (Math.random() - 0.5) * 0.001,
+      longitude: 12.339223833333334 + (Math.random() - 0.5) * 0.001, 
+      speed: 0.5 + Math.random() * 3.0,
     } satisfies XrayPayload;
 
     const payload = { ...base, ...overrides };

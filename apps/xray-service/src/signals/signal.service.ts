@@ -66,16 +66,19 @@ export class SignalService {
       ? new Date(payload.time).toISOString()
       : new Date().toISOString();
 
-    return {
-      deviceId: payload.deviceId,
-      time: timeIso,
-      dataLength: this.calculateDataLength(payload),
-      dataVolume: this.calculateDataVolume(payload),
-      kV: payload.kV,
-      mA: payload.mA,
-      exposureTime: payload.exposureTime,
-      projectionType: payload.projectionType,
-    };
+      return {
+        deviceId: payload.deviceId,
+        time: timeIso,
+        dataLength: this.calculateDataLength(payload),
+        dataVolume: this.calculateDataVolume(payload),
+        kV: payload.kV,
+        mA: payload.mA,
+        exposureTime: payload.exposureTime,
+        projectionType: payload.projectionType,
+        latitude: payload.latitude,        
+        longitude: payload.longitude,      
+        speed: payload.speed,  
+      };
   }
 
   private calculateDataLength(payload: CreateXrayDto): number {
@@ -243,9 +246,12 @@ export class SignalService {
     endDate?: Date;
     deviceId?: string;
     projectionType?: string;
+    latitude?: number | { $gte: number; $lte: number };
+    longitude?: number | { $gte: number; $lte: number };
+    speed?: number | { $gte: number; $lte: number };
   }): Promise<XrayData[]> {
     try {
-      const query: Record<string, any> = {};
+      const query: Record<string, unknown> = {};
 
       if (filters.startDate || filters.endDate) {
         query.time = {};
@@ -263,6 +269,19 @@ export class SignalService {
 
       if (filters.projectionType) {
         query.projectionType = filters.projectionType;
+      }
+
+      // Handle coordinate filters
+      if (filters.latitude) {
+        query.latitude = filters.latitude;
+      }
+
+      if (filters.longitude) {
+        query.longitude = filters.longitude;
+      }
+
+      if (filters.speed) {
+        query.speed = filters.speed;
       }
 
       return await this.xrayModel.find(query).exec();

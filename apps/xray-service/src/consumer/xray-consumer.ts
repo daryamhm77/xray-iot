@@ -24,7 +24,7 @@ export class XrayConsumer implements OnApplicationBootstrap {
         }
 
         this.logger.log(
-          `Received x-ray data from device: ${deviceId}, timestamp: ${time}, length: ${xrayData.dataLength} bytes`
+          `Received x-ray data from device: ${deviceId}, timestamp: ${time}, length: ${xrayData.dataLength} bytes`,
         );
 
         await this.signalService.processAndSaveSignal(xrayData);
@@ -64,7 +64,7 @@ export class XrayConsumer implements OnApplicationBootstrap {
     }
 
     return {
-      deviceId: data.deviceId as string,
+      deviceId: data.deviceId,
       time: parsedTime.toISOString(),
       dataLength: typeof data.dataLength === 'number' ? data.dataLength : 0,
       dataVolume: typeof data.dataVolume === 'number' ? data.dataVolume : 0,
@@ -76,6 +76,10 @@ export class XrayConsumer implements OnApplicationBootstrap {
         typeof data.projectionType === 'string'
           ? data.projectionType
           : undefined,
+      latitude: typeof data.latitude === 'number' ? data.latitude : undefined,
+      longitude:
+        typeof data.longitude === 'number' ? data.longitude : undefined,
+      speed: typeof data.speed === 'number' ? data.speed : undefined,
     };
   }
 

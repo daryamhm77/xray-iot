@@ -73,4 +73,32 @@ export class UpdateXrayDto {
     required: false,
   })
   projectionType?: string;
+
+  // Add coordinate and speed fields for IoT device tracking
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty({
+    description: 'GPS latitude coordinate of the device',
+    example: 51.339764,
+    required: false,
+  })
+  latitude?: number;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty({
+    description: 'GPS longitude coordinate of the device',
+    example: 12.339223833333334,
+    required: false,
+  })
+  longitude?: number;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty({
+    description: 'Device movement speed',
+    example: 1.2038000000000002,
+    required: false,
+  })
+  speed?: number;
 }
