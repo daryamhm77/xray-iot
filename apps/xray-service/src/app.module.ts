@@ -8,7 +8,6 @@ import { DatabaseModule } from '@app/common/database/database.module';
 
 @Module({
   imports: [
-    // Keep Config global so main.ts and services can read env vars
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: './apps/xray-service/.env',

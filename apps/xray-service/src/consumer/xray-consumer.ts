@@ -3,7 +3,6 @@ import { SignalService } from '../signals/signal.service';
 import { RmqService } from '@app/common/rmq/rmq.service';
 import { CreateXrayDto } from '../signals/dto/create-xray.dto';
 
-
 @Injectable()
 export class XrayConsumer implements OnApplicationBootstrap {
   private readonly logger = new Logger(XrayConsumer.name);
@@ -16,13 +15,10 @@ export class XrayConsumer implements OnApplicationBootstrap {
   onApplicationBootstrap() {
     this.rmqService.consume('xray_queue', async (payload: unknown) => {
       try {
-        // Parse and validate the incoming data
         const xrayData = this.parseXrayData(payload);
 
-        // Extract deviceId and timestamp
         const { deviceId, time } = xrayData;
 
-        // Calculate data length if not provided
         if (!xrayData.dataLength) {
           xrayData.dataLength = this.calculateDataLength(payload);
         }
@@ -53,7 +49,6 @@ export class XrayConsumer implements OnApplicationBootstrap {
       throw new Error('Invalid time: timestamp is required');
     }
 
-    // Parse timestamp
     let parsedTime: Date;
     if (data.time instanceof Date) {
       parsedTime = data.time;

@@ -18,11 +18,9 @@ import {
   ApiOperation,
   ApiParam,
   ApiBody,
-  ApiResponse,
   ApiConsumes,
   ApiQuery,
 } from '@nestjs/swagger';
-import { XrayData } from './schema/xray-schema';
 import { FormType } from '@app/common/enums/form-type.enum';
 import { Pagination } from '@app/common/decorators/pagination.decorator';
 import { PaginationDto } from '@app/common/dto/pagination.dto';
@@ -33,11 +31,6 @@ export class SignalController {
 
   @Post()
   @ApiConsumes(FormType.Json, FormType.Urlencoded)
-  @ApiOperation({
-    summary: 'Create a new signal',
-    description:
-      'Create a new X-ray signal with all required and optional fields.',
-  })
   @ApiBody({
     type: CreateXrayDto,
     description: 'Signal data to create',
@@ -68,15 +61,6 @@ export class SignalController {
       },
     },
   })
-  @ApiResponse({
-    status: 201,
-    description: 'Signal created successfully',
-    type: XrayData,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Invalid input data',
-  })
   async create(@Body(ValidationPipe) createXrayDto: CreateXrayDto) {
     try {
       return await this.signalService.create(createXrayDto);
@@ -89,10 +73,6 @@ export class SignalController {
   }
 
   @Get()
-  @ApiOperation({
-    summary: 'Get all signals with pagination',
-    description: 'Retrieve a paginated list of all X-ray signals.',
-  })
   @ApiQuery({
     name: 'page',
     type: Number,
@@ -155,11 +135,6 @@ export class SignalController {
 
   @Patch(':id')
   @ApiConsumes(FormType.Json, FormType.Urlencoded)
-  @ApiOperation({
-    summary: 'Update a signal',
-    description:
-      'Update an existing X-ray signal by ID. Only the fields you want to update need to be provided.',
-  })
   @ApiParam({
     name: 'id',
     description: 'The ID of the signal to update',
@@ -200,19 +175,6 @@ export class SignalController {
         },
       },
     },
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Signal updated successfully',
-    type: XrayData,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Signal not found',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Invalid input data',
   })
   async update(
     @Param('id') id: string,

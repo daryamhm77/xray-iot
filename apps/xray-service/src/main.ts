@@ -8,15 +8,15 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
 
-  // API prefix for better structure
+ 
   app.setGlobalPrefix('api');
 
-  // Strict validation
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-      whitelist: true, // remove extra fields
-      forbidNonWhitelisted: true, // throw error on extra fields
+      whitelist: true, 
+      forbidNonWhitelisted: true, 
     }),
   );
 

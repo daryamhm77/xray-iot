@@ -10,7 +10,6 @@ describe('XrayConsumer', () => {
   let signalService: jest.Mocked<SignalService>;
   let rmqService: jest.Mocked<RmqService>;
 
-  // Test data factories
   const createTestPayload = (overrides = {}) => ({
     deviceId: 'device-001',
     time: '2024-01-01T10:00:00.000Z',
@@ -52,10 +51,8 @@ describe('XrayConsumer', () => {
     signalService = module.get(SignalService);
     rmqService = module.get(RmqService);
 
-    // Clear all mocks before each test
     jest.clearAllMocks();
 
-    // Mock Logger to prevent console output during tests
     jest.spyOn(Logger.prototype, 'log').mockImplementation();
     jest.spyOn(Logger.prototype, 'error').mockImplementation();
   });
@@ -68,7 +65,6 @@ describe('XrayConsumer', () => {
     it('should set up queue consumer', () => {
       consumer.onApplicationBootstrap();
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(rmqService.consume).toHaveBeenCalledWith(
         'xray_queue',
         expect.any(Function),
@@ -92,7 +88,6 @@ describe('XrayConsumer', () => {
 
       await messageHandler(payload);
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(signalService.processAndSaveSignal).toHaveBeenCalledWith(
         expect.objectContaining({
           deviceId: payload.deviceId,
@@ -106,14 +101,13 @@ describe('XrayConsumer', () => {
     it('should calculate dataLength if not provided', async () => {
       const payload = createTestPayload({
         deviceId: createTestDeviceId('002'),
-        dataLength: undefined, // Will be calculated
+        dataLength: undefined,
       });
       const { dataLength, ...payloadWithoutDataLength } = payload;
 
       signalService.processAndSaveSignal.mockResolvedValue({} as XrayData);
       await messageHandler(payload);
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(signalService.processAndSaveSignal).toHaveBeenCalledWith(
         expect.objectContaining({
           deviceId: payload.deviceId,
@@ -136,7 +130,6 @@ describe('XrayConsumer', () => {
 
       await messageHandler(payload);
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(signalService.processAndSaveSignal).toHaveBeenCalledWith(
         expect.objectContaining({
           deviceId: 'device-003',
@@ -161,7 +154,6 @@ describe('XrayConsumer', () => {
 
       await messageHandler(payload);
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(signalService.processAndSaveSignal).toHaveBeenCalledWith(
         expect.objectContaining({
           deviceId: 'device-004',
@@ -198,7 +190,6 @@ describe('XrayConsumer', () => {
 
       await messageHandler(invalidPayload);
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(signalService.processAndSaveSignal).not.toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalledWith(
         'Error processing x-ray message',
@@ -217,7 +208,6 @@ describe('XrayConsumer', () => {
 
       await messageHandler(invalidPayload);
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(signalService.processAndSaveSignal).not.toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalledWith(
         'Error processing x-ray message',
@@ -230,7 +220,6 @@ describe('XrayConsumer', () => {
 
       await messageHandler(null);
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(signalService.processAndSaveSignal).not.toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalledWith(
         'Error processing x-ray message',
@@ -243,7 +232,6 @@ describe('XrayConsumer', () => {
 
       await messageHandler(undefined);
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(signalService.processAndSaveSignal).not.toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalledWith(
         'Error processing x-ray message',
@@ -282,14 +270,13 @@ describe('XrayConsumer', () => {
         mA: 300,
         exposureTime: 150,
         projectionType: 'Lateral',
-        additionalField: 'should be ignored', // Extra field that should be ignored
+        additionalField: 'should be ignored',
       };
 
       signalService.processAndSaveSignal.mockResolvedValue({} as XrayData);
 
       await messageHandler(complexPayload);
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(signalService.processAndSaveSignal).toHaveBeenCalledWith(
         expect.objectContaining({
           deviceId: complexPayload.deviceId,
@@ -318,13 +305,12 @@ describe('XrayConsumer', () => {
 
       await messageHandler(payloadWithStringNumbers);
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(signalService.processAndSaveSignal).toHaveBeenCalledWith(
         expect.objectContaining({
           deviceId: payloadWithStringNumbers.deviceId,
-          dataLength: 121, // Calculated from JSON.stringify length
+          dataLength: 121,
           dataVolume: 0,
-          kV: undefined, // String numbers are not converted, default to undefined
+          kV: undefined,
           mA: undefined,
         }),
       );
@@ -357,7 +343,7 @@ describe('XrayConsumer', () => {
     it('should handle different date formats', async () => {
       const payload = {
         deviceId: 'device-010',
-        time: '2024-01-01T10:00:00Z', // Without milliseconds
+        time: '2024-01-01T10:00:00Z',
         dataLength: 1024,
         dataVolume: 2048,
       };
@@ -365,7 +351,7 @@ describe('XrayConsumer', () => {
       await messageHandler(payload);
 
       const calledWith = signalService.processAndSaveSignal.mock.calls[0][0];
-      expect(calledWith.time).toBe('2024-01-01T10:00:00.000Z'); // Converted to ISO with milliseconds
+      expect(calledWith.time).toBe('2024-01-01T10:00:00.000Z');
     });
   });
 });

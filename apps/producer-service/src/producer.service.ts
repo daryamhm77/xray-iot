@@ -3,7 +3,7 @@ import { RmqService } from '@app/common/rmq/rmq.service';
 
 export interface XrayPayload {
   deviceId: string;
-  time: string; // ISO string
+  time: string;
   dataLength: number;
   dataVolume: number;
   kV?: number;
@@ -35,7 +35,7 @@ export class ProducerService {
 
     const payload = { ...base, ...overrides };
     return payload;
-  } 
+  }
 
   sendSample(deviceId: string, overrides?: Partial<XrayPayload>): void {
     const payload = this.generateSample(deviceId, overrides);
@@ -46,7 +46,6 @@ export class ProducerService {
   async sendBatch(deviceId: string, count = 5): Promise<void> {
     for (let i = 0; i < count; i++) {
       this.sendSample(deviceId);
-      // small delay
 
       await new Promise((res) => setTimeout(res, 100));
     }
