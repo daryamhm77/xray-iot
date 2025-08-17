@@ -66,19 +66,19 @@ export class SignalService {
       ? new Date(payload.time).toISOString()
       : new Date().toISOString();
 
-      return {
-        deviceId: payload.deviceId,
-        time: timeIso,
-        dataLength: this.calculateDataLength(payload),
-        dataVolume: this.calculateDataVolume(payload),
-        kV: payload.kV,
-        mA: payload.mA,
-        exposureTime: payload.exposureTime,
-        projectionType: payload.projectionType,
-        latitude: payload.latitude,        
-        longitude: payload.longitude,      
-        speed: payload.speed,  
-      };
+    return {
+      deviceId: payload.deviceId,
+      time: timeIso,
+      dataLength: this.calculateDataLength(payload),
+      dataVolume: this.calculateDataVolume(payload),
+      kV: payload.kV,
+      mA: payload.mA,
+      exposureTime: payload.exposureTime,
+      projectionType: payload.projectionType,
+      latitude: payload.latitude,
+      longitude: payload.longitude,
+      speed: payload.speed,
+    };
   }
 
   private calculateDataLength(payload: CreateXrayDto): number {
